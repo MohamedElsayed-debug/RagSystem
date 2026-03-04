@@ -1,0 +1,448 @@
+{
+  "name": "RAG System",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=You are a retrieval-augmented generation (RAG) assistant specialized in smartphones.\n\nYou must strictly follow these rules:\n\n1. Use ONLY the provided context.\n2. Do NOT use prior knowledge.\n3. If the answer is not explicitly stated in the context, respond with:\n   \"Not found in the knowledge base.\"\n4. Keep answers structured and concise.\n5. When listing advantages or disadvantages, format them as bullet points.",
+          "enableStreaming": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        608,
+        -128
+      ],
+      "id": "5ee4c0d7-12ff-40ab-ada0-fc47ccfcccbc",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "description": "=This vector database contains structured information about five smartphones:\niPhone 15 Pro, Samsung Galaxy S23 Ultra, Google Pixel 8, OnePlus 12, and Xiaomi 13 Pro.\n\nThe data includes:\n- Advantages\n- Disadvantages\n- Key features\n- Performance characteristics\n\nThe retriever should return relevant chunks based on semantic similarity to user questions about phone pros, cons, and specifications.",
+        "topK": 5
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1.1,
+      "position": [
+        784,
+        48
+      ],
+      "id": "c6e66c21-7356-47cd-88c5-0da326878540",
+      "name": "Answer questions with a vector store"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "returnAll": true,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "root",
+            "mode": "list",
+            "cachedResultName": "/ (Root folder)",
+            "cachedResultUrl": "https://drive.google.com/drive"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        352,
+        -608
+      ],
+      "id": "33c856d3-aae8-4d62-8eb2-7f0ed94500a6",
+      "name": "Search files and folders",
+      "retryOnFail": false,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "1veyVMhn3XvicTep",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        544,
+        -608
+      ],
+      "id": "924c573f-4ae0-4b8e-9b4a-a796e9fa362f",
+      "name": "Download file",
+      "retryOnFail": false,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "1veyVMhn3XvicTep",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Sen files to rag",
+        "height": 512,
+        "width": 1136
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        32,
+        -720
+      ],
+      "typeVersion": 1,
+      "id": "f9162a01-51a3-4a5d-9128-a177fd76f2f1",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Rag Ai\n",
+        "height": 736,
+        "width": 1136,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        32,
+        -176
+      ],
+      "typeVersion": 1,
+      "id": "0b6c488d-a1e1-4b88-a2da-9d7d4b4df274",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        96,
+        -496
+      ],
+      "id": "c88a1b99-67cc-411f-b300-fa37e6b9df9b",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "model": "nomic-embed-text:latest"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "typeVersion": 1,
+      "position": [
+        560,
+        384
+      ],
+      "id": "e257e776-0f13-4926-9025-e3b26614f128",
+      "name": "Embeddings Ollama",
+      "credentials": {
+        "ollamaApi": {
+          "id": "NAMO7r8YWBvyv0nY",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        464,
+        80
+      ],
+      "id": "5dab9415-e168-45ff-8b3d-24f8f735d28e",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "f3Qb6tNHu7Sr2YjT",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1008,
+        208
+      ],
+      "id": "f4c7293c-e0a2-4451-8451-efb7490a553e",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "f3Qb6tNHu7Sr2YjT",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        128,
+        -64
+      ],
+      "id": "32df9e4c-6346-4d91-9ba1-87b633edbfc6",
+      "name": "When chat message received",
+      "webhookId": "6699d45a-89b8-4e2a-a89d-1b7dae962c76"
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "moh",
+          "mode": "list",
+          "cachedResultName": "moh"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        608,
+        224
+      ],
+      "id": "d829c4cd-2108-4484-a0a7-14bd41e9030c",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "gFdPOam2QuiD0XOb",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "moh",
+          "mode": "list",
+          "cachedResultName": "moh"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        784,
+        -608
+      ],
+      "id": "faed09db-0fd8-4514-ab81-b5bc9868f6d1",
+      "name": "Pinecone Vector Store1",
+      "credentials": {
+        "pineconeApi": {
+          "id": "gFdPOam2QuiD0XOb",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        992,
+        -416
+      ],
+      "id": "5443faf3-9bd4-4d67-8e86-5d1faa93404f",
+      "name": "Default Data Loader1"
+    },
+    {
+      "parameters": {
+        "model": "nomic-embed-text:latest"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "typeVersion": 1,
+      "position": [
+        720,
+        -416
+      ],
+      "id": "1d484a12-9a46-4af0-897a-af5b62c0c9c5",
+      "name": " Ollama",
+      "credentials": {
+        "ollamaApi": {
+          "id": "NAMO7r8YWBvyv0nY",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## [شرح الراج سيستم على اليوتيوب](https://youtu.be/5ya43DpeV3w)\n@[youtube](5ya43DpeV3w)",
+        "height": 480,
+        "width": 720,
+        "color": 3
+      },
+      "id": "690c545c-e740-4085-b41f-631812d18276",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        288,
+        -1248
+      ],
+      "typeVersion": 1,
+      "disabled": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Answer questions with a vector store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Ollama": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader1": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    " Ollama": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "7f746a45-b684-4bbe-8f4c-41b3b340307e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1363e3c5a56664f67fe1245d82e78b65b2e643180821bcedc1a4c793d3f29cd9"
+  },
+  "id": "5Bt3WUt5lu7Cebnz",
+  "tags": []
+}
